@@ -2,8 +2,11 @@ package com.example.springstatemachine.configurations;
 
 import com.example.springstatemachine.model.CamelCallEvents;
 import com.example.springstatemachine.model.CamelCallStates;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
@@ -19,7 +22,12 @@ import java.util.EnumSet;
 
 @Configuration
 @EnableStateMachineFactory
-public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachineConfigurerAdapter<CamelCallStates, CamelCallEvents> {
+public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachineConfigurerAdapter<CamelCallStates, CamelCallEvents>
+{
+    @Autowired
+    @Qualifier("schedulerTasks")
+    ThreadPoolTaskScheduler scheduler;
+
     @Override
     public void configure(StateMachineStateConfigurer<CamelCallStates, CamelCallEvents> states) throws Exception {
         states.withStates()
@@ -29,10 +37,7 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
 
     }
 
-
-
     @Override
-
     public void configure(StateMachineTransitionConfigurer<CamelCallStates, CamelCallEvents> transitions) throws Exception {
         transitions.withExternal()
                 .source(CamelCallStates.INITIAL_STATE)
@@ -78,6 +83,7 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
     public void configure(StateMachineConfigurationConfigurer<CamelCallStates, CamelCallEvents> config) throws Exception {
         config.withConfiguration()
                 .autoStartup(false)
+                .taskScheduler( scheduler )
                 .listener(listener());
     }
 
