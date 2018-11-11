@@ -24,10 +24,19 @@ public class SpringStateMachineApplication implements CommandLineRunner {
         System.out.println( "state machine start");
 
         StateMachine<CamelCallStates, CamelCallEvents> stateMachine = stmFactory.getStateMachine();
+        StateMachine<CamelCallStates, CamelCallEvents> stateMachine1 = stmFactory.getStateMachine();
 
         stateMachine.start();
+        stateMachine1.start();
+
+        System.out.println( stateMachine );
+        System.out.println( stateMachine1 );
+
+
         stateMachine.sendEvent( CamelCallEvents.SEND_INITIAL_DP );
         Thread.sleep( 5000);
+        stateMachine1.sendEvent( CamelCallEvents.SEND_INITIAL_DP );
+
 //        stateMachine.sendEvent( CamelCallEvents.IDP_ANSWER_TIMEOUT );
 //        stateMachine.sendEvent( CamelCallEvents.SEND_CALL_START );
 //        stateMachine.sendEvent( CamelCallEvents.CALL_START_ASNWER_TIMEOUT);

@@ -6,5 +6,5 @@ public enum CamelCallEvents
     IDP_ANSWER_TIMEOUT,
     SEND_CALL_START,
     CALL_START_ASNWER_TIMEOUT,
-    END_CALL;
+    END_CALL
 }
