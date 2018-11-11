@@ -2,6 +2,7 @@ package com.example.springstatemachine.configurations;
 
 import com.example.springstatemachine.model.CamelCallEvents;
 import com.example.springstatemachine.model.CamelCallStates;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.StateContext;
 import org.springframework.statemachine.action.Action;
@@ -37,14 +38,17 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
                 .source(CamelCallStates.INITIAL_STATE)
                 .target(CamelCallStates.WAIT_IDP_ANSWER)
                 .event(CamelCallEvents.SEND_INITIAL_DP)
+                .action( defaultAction( ))
                 .and().withExternal()
                 .source(CamelCallStates.WAIT_IDP_ANSWER)
                 .target(CamelCallStates.WAIT_CALL_START_ANSWER)
                 .event(CamelCallEvents.SEND_CALL_START)
+                .action(defaultAction())
                 .and().withExternal()
                 .source(CamelCallStates.WAIT_IDP_ANSWER)
                 .target(CamelCallStates.CALL_ENDED)
                 .event(CamelCallEvents.IDP_ANSWER_TIMEOUT)
+                .action( defaultAction())
                 .and().withInternal()
                 .source(CamelCallStates.WAIT_IDP_ANSWER)
                 .timerOnce(2000)
@@ -53,20 +57,21 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
                 .source(CamelCallStates.WAIT_CALL_START_ANSWER)
                 .target(CamelCallStates.CALL_ENDED)
                 .event(CamelCallEvents.END_CALL)
+                .action( defaultAction())
                 .and().withExternal()
                 .source(CamelCallStates.WAIT_CALL_START_ANSWER)
                 .target(CamelCallStates.CALL_ENDED)
-                .event(CamelCallEvents.CALL_START_ASNWER_TIMEOUT);
+                .event(CamelCallEvents.CALL_START_ASNWER_TIMEOUT)
+                .action(defaultAction());
     }
 
-    private Action<CamelCallStates, CamelCallEvents> timerAction() {
-        return new Action<CamelCallStates, CamelCallEvents>() {
-            @Override
-            public void execute(StateContext<CamelCallStates, CamelCallEvents> context) {
-                System.out.println("#####timer action");
-                context.getStateMachine().sendEvent(CamelCallEvents.IDP_ANSWER_TIMEOUT);
-            }
+    private Action<CamelCallStates, CamelCallEvents> timerAction(  )
+    {
+        return context -> {
+            System.out.println( "Timer action: " + Thread.currentThread().getName());
+            context.getStateMachine().sendEvent(CamelCallEvents.IDP_ANSWER_TIMEOUT);
         };
+
     }
 
     @Override
@@ -91,6 +96,15 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
 
                 System.out.println("from = [" + fromStr + "], to = [" + toStr + "]");
             }
+        };
+    }
+
+    @Bean
+    public Action<CamelCallStates, CamelCallEvents> defaultAction(  )
+    {
+        return context -> {
+            System.out.println( "Default action: " + Thread.currentThread().getName());
+
         };
     }
 }
