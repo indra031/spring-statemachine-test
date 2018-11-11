@@ -18,6 +18,7 @@ import org.springframework.statemachine.listener.StateMachineListener;
 import org.springframework.statemachine.listener.StateMachineListenerAdapter;
 import org.springframework.statemachine.state.State;
 
+import javax.annotation.PreDestroy;
 import java.util.EnumSet;
 
 @Configuration
@@ -83,7 +84,7 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
     public void configure(StateMachineConfigurationConfigurer<CamelCallStates, CamelCallEvents> config) throws Exception {
         config.withConfiguration()
                 .autoStartup(false)
-                .taskScheduler( scheduler )
+                //.taskScheduler( scheduler )
                 .listener(listener());
     }
 
@@ -108,9 +109,16 @@ public class CamelBasicScenarioStateMachineConfiguration extends EnumStateMachin
     @Bean
     public Action<CamelCallStates, CamelCallEvents> defaultAction(  )
     {
-        return context -> {
+        return context ->
+        {
             System.out.println( "Default action: " + Thread.currentThread().getName());
 
         };
+    }
+
+    @PreDestroy
+    public void destroy( )
+    {
+        System.out.println( "### destroy ###");
     }
 }
